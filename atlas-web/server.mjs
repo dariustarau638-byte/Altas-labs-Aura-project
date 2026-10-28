@@ -1,15 +1,19 @@
 import http from 'node:http';
+import https from 'node:https';
 import fs from 'node:fs';
 import path from 'node:path';
 
 const PRIMARY_PORT = parseInt(process.env.PORT || process.env.WEB_PORT || '5173', 10);
 const SECONDARY_PORT = 5180;
 
-const rawBackend = process.env.BACKEND_URL || 'http://127.0.0.1:5000';
-const BACKEND_URL = rawBackend.startsWith('http://') || rawBackend.startsWith('https://')
-  ? rawBackend
-  : `http://${rawBackend}`;
+// Hardcoded proxy target directly to https://onrender.com (bypasses broken internal link)
+const BACKEND_URL = 'https://onrender.com';
 const BACKEND_TARGET = new URL(BACKEND_URL);
+const isHttps = BACKEND_TARGET.protocol === 'https:';
+const httpModule = isHttps ? https : http;
+const backendPort = BACKEND_TARGET.port
+  ? parseInt(BACKEND_TARGET.port, 10)
+  : (isHttps ? 443 : 80);
 
 const DIST_DIR = path.resolve(import.meta.dirname, 'dist');
 const RELEASE_DIR = path.resolve(import.meta.dirname, '../aura-desktop/release');
@@ -25,22 +29,54 @@ const MIME_TYPES = {
   '.apk': 'application/vnd.android.package-archive',
 };
 
+/**
+ * Evaluates request origin and dynamically accepts https://theo.site,
+ * any preview subdomains (*.theo.site), and onrender.com domains.
+ */
+function getCorsOrigin(req) {
+  const origin = req.headers.origin || '';
+  if (!origin) return '*';
+
+  try {
+    const originUrl = new URL(origin);
+    const host = originUrl.hostname.toLowerCase();
+
+    // 1. Explicitly accept https://theo.site and all preview subdomains (*.theo.site)
+    if (host === 'theo.site' || host.endsWith('.theo.site')) {
+      return origin;
+    }
+    // 2. Explicitly accept https://onrender.com and all render subdomains (*.onrender.com)
+    if (host === 'onrender.com' || host.endsWith('.onrender.com')) {
+      return origin;
+    }
+    // 3. Accept localhost / local IPs for testing
+    if (host === 'localhost' || host === '127.0.0.1') {
+      return origin;
+    }
+  } catch {}
+
+  return origin || '*';
+}
+
+function getCorsHeaders(req) {
+  const allowedOrigin = getCorsOrigin(req);
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+    'Access-Control-Allow-Credentials': 'true',
+    'Access-Control-Max-Age': '86400',
+    'Vary': 'Origin',
+  };
+}
+
 function handleRequest(req, res) {
   const cleanUrl = decodeURIComponent((req.url || '/').split('?')[0]);
-
-  // Global CORS Headers
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept',
-  };
+  const corsHeaders = getCorsHeaders(req);
 
   // Preflight OPTIONS handling
   if (req.method === 'OPTIONS') {
-    res.writeHead(204, {
-      ...corsHeaders,
-      'Access-Control-Max-Age': '86400',
-    });
+    res.writeHead(204, corsHeaders);
     return res.end();
   }
 
@@ -112,32 +148,41 @@ function handleRequest(req, res) {
     }
   }
 
-  // 1c. Forward /api/* requests to shared Auth & Usage Backend Server (default: http://127.0.0.1:5000)
+  // 1c. Forward /api/* requests directly to https://onrender.com
   if (cleanUrl.startsWith('/api/')) {
     const proxyHeaders = {
       ...req.headers,
-      host: `${BACKEND_TARGET.hostname}:${BACKEND_TARGET.port || 5000}`,
+      host: BACKEND_TARGET.host,
       'x-forwarded-host': req.headers.host || '',
       'x-forwarded-proto': 'https',
     };
 
-    const backendReq = http.request(
+    const backendReq = httpModule.request(
       {
+        protocol: BACKEND_TARGET.protocol,
         hostname: BACKEND_TARGET.hostname,
-        port: parseInt(BACKEND_TARGET.port || '5000', 10),
+        port: backendPort,
         path: req.url,
         method: req.method,
         headers: proxyHeaders,
+        timeout: 30000,
+        servername: BACKEND_TARGET.hostname,
       },
       (backendRes) => {
         const combinedHeaders = {
           ...backendRes.headers,
           ...corsHeaders,
         };
+        combinedHeaders['access-control-allow-origin'] = corsHeaders['Access-Control-Allow-Origin'];
+        combinedHeaders['access-control-allow-credentials'] = 'true';
         res.writeHead(backendRes.statusCode, combinedHeaders);
         backendRes.pipe(res);
       }
     );
+
+    backendReq.on('timeout', () => {
+      backendReq.destroy(new Error('Backend connection timed out after 30s'));
+    });
 
     backendReq.on('error', (err) => {
       res.writeHead(502, {
