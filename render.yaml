@@ -1,0 +1,44 @@
+# Render Infrastructure Blueprint Specification
+# Atlas Labs: Unified Auth, Usage Tracking & Web Proxy Architecture
+
+services:
+  # ---------------------------------------------------------------------------
+  # 1. Backend Server: Centralized Auth Provider & Usage Tracking Hub
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: atlas-backend-server
+    runtime: node
+    plan: starter
+    region: oregon
+    rootDir: backend-server
+    buildCommand: npm install
+    startCommand: node src/app.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+
+  # ---------------------------------------------------------------------------
+  # 2. Atlas Web Portal: Front-facing Portal & Reverse API Proxy
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: atlas-web-portal
+    runtime: node
+    plan: starter
+    region: oregon
+    rootDir: atlas-web
+    buildCommand: npm install
+    startCommand: node server.mjs
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: BACKEND_URL
+        fromService:
+          type: web
+          name: atlas-backend-server
+          property: host

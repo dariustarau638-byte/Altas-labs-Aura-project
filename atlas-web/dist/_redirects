@@ -1,0 +1,4 @@
+/downloads/*  /downloads/:splat  200
+/mobile/*     /mobile/index.html 200
+/*            /index.html        200
+

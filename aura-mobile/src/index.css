@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+  --color-cyan-300: #c2d0ff;
+  --color-cyan-400: #9bb3ff;
+  --color-cyan-500: #7895f5;
+  --color-cyan-600: #5b78db;
+  --color-cyan-700: #465fb4;
+}
+
+@layer base {
+  html, body, #root {
+    min-height: 100%;
+    margin: 0;
+  }
+
+  html { background: #080b12; }
+
+  body {
+    min-height: 100dvh;
+    background: radial-gradient(ellipse at 50% -18%, rgb(53 76 139 / 0.22), transparent 55%), #080b12;
+    color: #e7eaf2;
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+    outline: 2px solid #9bb3ff;
+    outline-offset: 2px;
+  }
+}
+
+/* Custom glowing effects matching the user's electric neon aesthetic */
+.neon-glow-cyan {
+  filter: drop-shadow(0 0 7px rgba(137, 164, 255, 0.35));
+}
+
+.neon-border {
+  border: 1px solid rgba(145, 167, 238, 0.25);
+  box-shadow: 0 0 18px -5px rgba(91, 120, 219, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.glass-panel {
+  background: rgba(16, 21, 33, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+/* Scrollbar subtil */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

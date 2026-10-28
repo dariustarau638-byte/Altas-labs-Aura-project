@@ -1,0 +1,29 @@
+{
+  "name": "aura-mobile",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Aura Mobile Companion – Remote Control, Live Vision & Coding Sessions for Smartphones",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 5195",
+    "build": "vite build",
+    "preview": "vite preview",
+    "android:sync": "vite build && npx cap sync android",
+    "android:open": "npx cap open android",
+    "android:bundle": "vite build && npx cap sync android && cd android && gradlew.bat bundleRelease"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/cli": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
+    "lucide-react": "^1.16.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.2.2",
+    "@vitejs/plugin-react": "^6.0.1",
+    "tailwindcss": "^4.2.2",
+    "vite": "^8.3.4"
+  }
+}

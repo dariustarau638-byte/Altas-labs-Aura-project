@@ -1,0 +1,25 @@
+# Dependencies
+**/node_modules/
+
+# Safety Backups & Temporary Scratch Directories
+app_build_backup_SAFE/
+**/app_build_backup_SAFE/
+.freebuff/
+**/scratch/
+Screenshots/
+
+# Large Binaries, Build Outputs & Installers (>50MB)
+*.exe
+*.zip
+*.tar.xz
+*.apk
+**/release/
+**/dist_installer/
+aura-desktop/bin/cloudflared.exe
+
+# Logs and Environment Files
+*.log
+.env
+.env.local
+.DS_Store
+Thumbs.db

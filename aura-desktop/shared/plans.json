@@ -1,0 +1,84 @@
+{
+  "version": "2.0.0",
+  "defaultTier": "free",
+  "tiers": {
+    "free": {
+      "id": "free",
+      "name": "Free Tier",
+      "priceMonthly": 0,
+      "priceYearly": 0,
+      "dailyActionLimit": 50,
+      "maxDevices": 1,
+      "modelsAllowed": ["local"],
+      "features": {
+        "localModels": true,
+        "cloudLlms": false,
+        "screenVision": false,
+        "unlimitedActions": false,
+        "jarvisDangerousTools": false,
+        "cursorCoPilot": false,
+        "cloudWorkspace": false,
+        "cloudConnectors": false,
+        "priorityInference": false
+      },
+      "rateLimits": {
+        "actionsPerDay": 50,
+        "maxClipboardSnippets": 15,
+        "maxActiveRoutines": 1
+      },
+      "description": "Local models via Ollama and up to 50 daily automation actions."
+    },
+    "pro": {
+      "id": "pro",
+      "name": "Aura Pro",
+      "priceMonthly": 20,
+      "priceYearly": 240,
+      "dailyActionLimit": -1,
+      "maxDevices": 3,
+      "modelsAllowed": ["local", "cloud"],
+      "features": {
+        "localModels": true,
+        "cloudLlms": true,
+        "screenVision": true,
+        "unlimitedActions": true,
+        "jarvisDangerousTools": true,
+        "cursorCoPilot": false,
+        "cloudWorkspace": false,
+        "cloudConnectors": true,
+        "priorityInference": true
+      },
+      "rateLimits": {
+        "actionsPerDay": -1,
+        "maxClipboardSnippets": 500,
+        "maxActiveRoutines": -1
+      },
+      "description": "Unlimited actions, premier Cloud LLMs, Screen Vision, and full Jarvis System Tools."
+    },
+    "enterprise": {
+      "id": "enterprise",
+      "name": "Aura Enterprise",
+      "priceMonthly": 50,
+      "priceYearly": 600,
+      "dailyActionLimit": -1,
+      "maxDevices": 10,
+      "modelsAllowed": ["local", "cloud", "dedicated"],
+      "features": {
+        "localModels": true,
+        "cloudLlms": true,
+        "screenVision": true,
+        "unlimitedActions": true,
+        "jarvisDangerousTools": true,
+        "cursorCoPilot": true,
+        "cloudWorkspace": true,
+        "cloudConnectors": true,
+        "priorityInference": true
+      },
+      "rateLimits": {
+        "actionsPerDay": -1,
+        "maxClipboardSnippets": -1,
+        "maxActiveRoutines": -1
+      },
+      "description": "Maximum computing power, Cursor Co-Pilot, isolated Cloud Workspaces, and team management."
+    }
+  }
+}

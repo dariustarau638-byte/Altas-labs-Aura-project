@@ -1,0 +1,20 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[[redirects]]
+  from = "/downloads/Aura-Setup-2.0.0.exe"
+  to = "https://github.com/dariustarau638-byte/Altas-labs-Aura-project/releases/latest/download/Aura.Setup.2.0.0.exe"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/downloads/Aura-Portable-2.0.0.exe"
+  to = "https://github.com/dariustarau638-byte/Altas-labs-Aura-project/releases/latest/download/Aura-Portable-2.0.0.exe"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -1,0 +1,103 @@
+{
+  "name": "aura-companion",
+  "productName": "Aura",
+  "version": "2.0.0",
+  "description": "Aura v2.0 – AI Desktop Companion & Visual Co-Pilot.",
+  "author": {
+    "name": "Atlas Labs",
+    "email": "support@atlaslabs.dev"
+  },
+  "homepage": "https://atlaslabs.dev",
+  "private": true,
+  "type": "module",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "concurrently -k -n vite,electron -c cyan,magenta \"vite\" \"wait-on tcp:127.0.0.1:5173 && cross-env VITE_DEV_SERVER_URL=http://127.0.0.1:5173 electron .\"",
+    "dev:ui": "vite",
+    "icon": "node scripts/generate-icon.mjs",
+    "build": "node scripts/generate-icon.mjs && vite build",
+    "start": "npm run build && electron .",
+    "test": "node --test",
+    "pack": "npm run build && electron-builder --dir",
+    "dist": "npm run build && electron-builder --win"
+  },
+  "build": {
+    "appId": "ai.aura.companion",
+    "productName": "Aura",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "shared/**/*",
+      "build/icon.*",
+      "package.json"
+    ],
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Aura AI Companion"
+    },
+    "portable": {
+      "artifactName": "Aura-Portable-${version}.exe"
+    },
+    "compression": "maximum",
+    "linux": {
+      "target": [
+        "tar.xz"
+      ],
+      "category": "Utility",
+      "maintainer": "Atlas Labs <support@atlaslabs.dev>",
+      "artifactName": "Setup_JarvisAI-Linux-${version}.${ext}"
+    },
+    "mac": {
+      "target": [
+        "zip"
+      ],
+      "category": "public.app-category.productivity",
+      "identity": null,
+      "artifactName": "Setup_JarvisAI-Mac-${version}.${ext}"
+    }
+  },
+  "dependencies": {
+    "@daytona/sdk": "^0.225.0",
+    "@fontsource-variable/geist": "^5.3.0",
+    "@fontsource-variable/geist-mono": "^5.3.0",
+    "lucide-react": "^1.16.0",
+    "motion": "^12.38.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.2.2",
+    "@vitejs/plugin-react": "^6.0.1",
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
+    "electron": "^41.2.0",
+    "electron-builder": "^26.15.3",
+    "tailwindcss": "^4.2.2",
+    "vite": "^8.3.4",
+    "wait-on": "^9.0.4"
+  }
+}

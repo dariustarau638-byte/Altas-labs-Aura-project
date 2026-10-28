@@ -1,0 +1,17 @@
+{
+  "name": "atlas-auth-usage-backend",
+  "version": "2.0.0",
+  "description": "Shared authentication provider and usage-tracking backend server connecting Theo Web and Aura Desktop",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "keywords": ["auth", "jwt", "usage-tracking", "telemetry", "atlas-labs"],
+  "author": "Atlas Labs <support@atlaslabs.dev>",
+  "license": "ISC"
+}

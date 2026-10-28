@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="atlasGrad" x1="8" y1="6" x2="56" y2="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#818CF8" />
+      <stop offset="50%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#38BDF8" />
+    </linearGradient>
+    <linearGradient id="atlasCore" x1="20" y1="16" x2="44" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#C7D2FE" />
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="56" height="56" rx="16" fill="#0B0D14" stroke="url(#atlasGrad)" stroke-width="2.2" />
+  <circle cx="32" cy="32" r="20" stroke="url(#atlasGrad)" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.55" />
+  <path d="M32 13L47 47H40.2L36.8 39H27.2L23.8 47H17L32 13ZM34.5 33.2L32 27L29.5 33.2H34.5Z" fill="url(#atlasCore)" />
+  <circle cx="32" cy="13" r="2.6" fill="#38BDF8" />
+</svg>
