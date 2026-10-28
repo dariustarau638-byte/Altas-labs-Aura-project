@@ -11,14 +11,43 @@ const plansConfig = JSON.parse(
 );
 
 export function createApp(db = new AtlasDatabase(':memory:'), jwtSecret = process.env.JWT_SECRET) {
+  function getCorsOrigin(req) {
+    const origin = req?.headers?.origin || '';
+    if (!origin) return 'https://theo.site';
+    try {
+      const host = new URL(origin).hostname.toLowerCase();
+      if (
+        host === 'theo.site' ||
+        host.endsWith('.theo.site') ||
+        host === 'onrender.com' ||
+        host.endsWith('.onrender.com') ||
+        host === 'localhost' ||
+        host === '127.0.0.1'
+      ) {
+        return origin;
+      }
+    } catch {}
+    return origin || 'https://theo.site';
+  }
+
+  function getCorsHeaders(req) {
+    return {
+      'Access-Control-Allow-Origin': getCorsOrigin(req),
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+      'Access-Control-Allow-Credentials': 'true',
+      'Access-Control-Max-Age': '86400',
+      'Vary': 'Origin',
+    };
+  }
+
   function sendJson(res, statusCode, data) {
     const body = JSON.stringify(data);
+    const cors = getCorsHeaders(res.__req);
     res.writeHead(statusCode, {
       'Content-Type': 'application/json; charset=utf-8',
       'Content-Length': Buffer.byteLength(body),
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept',
+      ...cors,
     });
     res.end(body);
   }
@@ -59,14 +88,10 @@ export function createApp(db = new AtlasDatabase(':memory:'), jwtSecret = proces
   }
 
   const server = http.createServer(async (req, res) => {
+    res.__req = req;
     // Enable CORS preflight
     if (req.method === 'OPTIONS') {
-      res.writeHead(204, {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept',
-        'Access-Control-Max-Age': '86400',
-      });
+      res.writeHead(204, getCorsHeaders(req));
       return res.end();
     }
 

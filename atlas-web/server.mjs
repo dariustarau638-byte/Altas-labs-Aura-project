@@ -35,7 +35,7 @@ const MIME_TYPES = {
  */
 function getCorsOrigin(req) {
   const origin = req.headers.origin || '';
-  if (!origin) return '*';
+  if (!origin) return 'https://theo.site';
 
   try {
     const originUrl = new URL(origin);
@@ -55,7 +55,7 @@ function getCorsOrigin(req) {
     }
   } catch {}
 
-  return origin || '*';
+  return origin || 'https://theo.site';
 }
 
 function getCorsHeaders(req) {
@@ -148,7 +148,7 @@ function handleRequest(req, res) {
     }
   }
 
-  // 1c. Forward /api/* requests directly to https://onrender.com
+  // 1c. Forward /api/* requests directly to https://atlas-backend-server-jp5m.onrender.com
   if (cleanUrl.startsWith('/api/')) {
     const proxyHeaders = {
       ...req.headers,
@@ -169,13 +169,22 @@ function handleRequest(req, res) {
         servername: BACKEND_TARGET.hostname,
       },
       (backendRes) => {
-        const combinedHeaders = {
-          ...backendRes.headers,
-          ...corsHeaders,
-        };
-        combinedHeaders['access-control-allow-origin'] = corsHeaders['Access-Control-Allow-Origin'];
-        combinedHeaders['access-control-allow-credentials'] = 'true';
-        res.writeHead(backendRes.statusCode, combinedHeaders);
+        // Strip any existing CORS or Vary headers from backend response (case-insensitive)
+        // to ensure Access-Control-Allow-Origin is sent exactly ONCE.
+        const cleanHeaders = {};
+        for (const [key, value] of Object.entries(backendRes.headers)) {
+          const lower = key.toLowerCase();
+          if (lower.startsWith('access-control-') || lower === 'vary') {
+            continue;
+          }
+          cleanHeaders[key] = value;
+        }
+
+        // Apply single, authoritative, normalized CORS headers reflecting theo.site / caller origin
+        const cors = getCorsHeaders(req);
+        Object.assign(cleanHeaders, cors);
+
+        res.writeHead(backendRes.statusCode, cleanHeaders);
         backendRes.pipe(res);
       }
     );
