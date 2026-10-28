@@ -6,8 +6,8 @@ import path from 'node:path';
 const PRIMARY_PORT = parseInt(process.env.PORT || process.env.WEB_PORT || '5173', 10);
 const SECONDARY_PORT = 5180;
 
-// Hardcoded proxy target directly to https://onrender.com (bypasses broken internal link)
-const BACKEND_URL = 'https://onrender.com';
+// Hardcoded proxy target directly to https://atlas-backend-server-jp5m.onrender.com
+const BACKEND_URL = 'https://atlas-backend-server-jp5m.onrender.com';
 const BACKEND_TARGET = new URL(BACKEND_URL);
 const isHttps = BACKEND_TARGET.protocol === 'https:';
 const httpModule = isHttps ? https : http;
